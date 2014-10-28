@@ -27,6 +27,94 @@ public class UserFacade {
 		return singleton;
 	}
 	
+	/**
+		Authentication method for user.
+	*/
+	public int authenticateUser(String theUsername, String thePassword, String theSessionID) throws SQLException, ClassNotFoundException, NamingException{
+		
+		// Get the connection from the DataAccess singleton
+		Connection con = dao.getConnection();
+			
+		//Execute the query
+		PreparedStatement stmt = con.prepareStatement("SELECT id, userName, userPassword, userId FROM onlineforms_user WHERE userName = ? AND userPassword = ?");
+		stmt.setString(1, theUsername);
+		stmt.setString(2, thePassword);
+		ResultSet rs = stmt.executeQuery();
+		
+		//System.out.println("In authenticateUser(UserFacade) Authentication Result is: " + rs);
+		
+		String userName = "";
+		String passWord = "";
+		String userId = "";
+		//foreign key in the authenticated_Session table
+		int onlineforms_user_id = rs.getInt("id");
+		
+		while(rs.next()){
+		
+			userName = rs.getString(1);
+			passWord = rs.getString(2);
+			userId = rs.getString(3);
+		}
+	
+		if(rs != null){
+			
+			if(userName.equals(theUsername) && passWord.equals(thePassword)){
+				Calendar calender = Calendar.getInstance();
+				java.sql.Timestamp timeStampObject = new java.sql.Timestamp(calender.getTime().getTime());
+				
+				String sess_id = theSessionID;
+				
+				PreparedStatement createStmt = con.prepareStatement("INSERT INTO authenticated_Session(userName, userPassword, userId, TS, session_id, onlineforms_user_id) values (?,?,?,?,?,?)");
+				createStmt.setString(1, userName);
+				createStmt.setString(2, passWord);
+				createStmt.setString(3, userId);
+				createStmt.setTimestamp(4, timeStampObject);
+				createStmt.setString(5, sess_id);
+				createStmt.setInt(6, onlineforms_user_id);
+				int res2 = createStmt.executeUpdate();
+				
+				System.out.println("Result 2 is: " + res2);
+				
+				return 1; //case that the test passes
+			}else{
+				
+				return 0;// password and/or username don't match
+			}
+		}
+		else{
+			
+			//didn't retrieve a row from the database meaning either the username and/or password didn't match
+			return 0; // case that the test failed
+		}
+	}//end authenticateUser class
+	
+	/**
+		Session validation method for user.
+	*/
+	public String sessionValid(String theUserId) throws SQLException, ClassNotFoundException, NamingException{
+		
+		// Get the connection from the DataAccess singleton
+		Connection con = dao.getConnection();
+			
+		//Execute the query
+		PreparedStatement stmt = con.prepareStatement("SELECT session_id FROM authenticated_Session WHERE userId = ?");
+		stmt.setString(1, theUserId);
+		ResultSet rs = stmt.executeQuery();
+	
+		String sess_id = "";
+	
+		if(rs.next()){
+		
+			sess_id = rs.getString(1);
+			System.out.println("In sessionValid(UserFacade) Authentication result is: " + sess_id);
+			return sess_id;
+			
+		}else{
+			//didn't retrieve a row from the database meaning the session_id was not found in the database
+			return null; // case that the test failed
+		}
+	}//end sessionValid class
+	
 	public OnlineUser[] getOnlineUsers() throws SQLException {
 		//get the connection from the FormDataAccess singleton object
 		Connection con = dao.getConnection();
@@ -44,9 +132,10 @@ public class UserFacade {
 			String theUserFirstName = rs.getString(3);
 			String theUserLastName = rs.getString(4);
 			String theUserEmail = rs.getString(5);
-			String theUserPassword = rs.getString(6);
-			Boolean theInactive = rs.getBoolean(7);
-			OnlineUser users = new OnlineUser(theId, theUserName, theUserFirstName, theUserLastName, theUserEmail, theUserPassword, theInactive);
+			String theUserId = rs.getString(6);
+			String theUserPassword = rs.getString(7);
+			Boolean theInactive = rs.getBoolean(8);
+			OnlineUser users = new OnlineUser(theId, theUserName, theUserFirstName, theUserLastName, theUserEmail, theUserId, theUserPassword, theInactive);
 			userArray[count] = users;
 			count++;
 		}
@@ -70,6 +159,7 @@ public class UserFacade {
 		String newUserFirstName = theUserToAdd.getFirstName();
 		String newUserLastName = theUserToAdd.getLastName();
 		String newUserEmail = theUserToAdd.getEmail();
+		String newUserId = theUserToAdd.getUserId();
 		String newUserPassword = theUserToAdd.getPassword();
 		//Set Inactive flag = false (initially set to "true" (in OnlineUser.java))
 		theUserToAdd.setInactive();
@@ -77,22 +167,24 @@ public class UserFacade {
 
 		
 		//Study the INSERT statement
-		PreparedStatement createStmt = con.prepareStatement("INSERT INTO onlineforms_user(userName, userFirstName, userLastName, userEmail, userPassword, inactive) VALUES (?, ?, ?, ?, ?, ?)");
+		PreparedStatement createStmt = con.prepareStatement("INSERT INTO onlineforms_user(userName, userFirstName, userLastName, userEmail, userId, userPassword, inactive) VALUES (?, ?, ?, ?, ?, ?, ?)");
 		createStmt.setString(1, newUsername);
 		createStmt.setString(2, newUserFirstName);
 		createStmt.setString(3, newUserLastName);
 		createStmt.setString(4, newUserEmail);
-		createStmt.setString(5, newUserPassword);
-		createStmt.setBoolean(6, newUserInactive);		
+		createStmt.setString(5, newUserId);
+		createStmt.setString(6, newUserPassword);
+		createStmt.setBoolean(7, newUserInactive);		
 		int res = createStmt.executeUpdate();
 		
-		PreparedStatement retrieveStmt = con.prepareStatement("SELECT * FROM onlineforms_user WHERE userName = ? AND userFirstName = ? AND userLastName = ? AND userEmail = ? AND userPassword = ? AND inactive = ?");
+		PreparedStatement retrieveStmt = con.prepareStatement("SELECT * FROM onlineforms_user WHERE userName = ? AND userFirstName = ? AND userLastName = ? AND userEmail = ? AND userId = ? AND userPassword = ? AND inactive = ?");
 		retrieveStmt.setString(1, newUsername);
 		retrieveStmt.setString(2, newUserFirstName);
 		retrieveStmt.setString(3, newUserLastName);
 		retrieveStmt.setString(4, newUserEmail);
-		retrieveStmt.setString(5, newUserPassword);
-		retrieveStmt.setBoolean(6, newUserInactive);
+		retrieveStmt.setString(5, newUserId);
+		retrieveStmt.setString(6, newUserPassword);
+		retrieveStmt.setBoolean(7, newUserInactive);
 		ResultSet rs = retrieveStmt.executeQuery();
 		
 		String result = "";
@@ -106,9 +198,10 @@ public class UserFacade {
 			String theUserFirstName = rs.getString("userFirstName");
 			String theUserLastName = rs.getString("userLastName");
 			String theUserEmail = rs.getString("userEmail");
+			String theUserId = rs.getString("userId");
 			String theUserPassword = rs.getString("userPassword");
 			Boolean theUserInactive = rs.getBoolean("inactive");
-			theUserToAdd = new OnlineUser(theId, theUsername, theUserFirstName, theUserLastName, theUserEmail, theUserPassword, theUserInactive);
+			theUserToAdd = new OnlineUser(theId, theUsername, theUserFirstName, theUserLastName, theUserEmail, theUserId, theUserPassword, theUserInactive);
 			System.out.println(theUserToAdd);
 			OnlineUserArray[count] = theUserToAdd;
 			count++;
@@ -142,9 +235,10 @@ public class UserFacade {
 			String theUserFirstName = rs.getString("userFirstName");
 			String theUserLastName = rs.getString("userLastName");
 			String theUserEmail = rs.getString("userEmail");
+			String theUserId = rs.getString("userId");
 			String theUserPassword = rs.getString("userPassword");
 			Boolean theUserInactive = rs.getBoolean("inactive");
-			OnlineUser user = new OnlineUser(theId, theUsername, theUserFirstName, theUserLastName, theUserEmail, theUserPassword, theUserInactive);
+			OnlineUser user = new OnlineUser(theId, theUsername, theUserFirstName, theUserLastName, theUserEmail, theUserId, theUserPassword, theUserInactive);
 			System.out.println(user);
 			OnlineUserArray[count] = user;
 			count++;			
@@ -177,15 +271,16 @@ public class UserFacade {
 			String theUserFirstName = rs.getString("userFirstName");
 			String theUserLastName = rs.getString("userLastName");
 			String theUserEmail = rs.getString("userEmail");
+			String theUserId = rs.getString("userId");
 			String theUserPassword = rs.getString("userPassword");
 			Boolean theUserInactive = rs.getBoolean("inactive");			
-			OnlineUser users = new OnlineUser(theId, theUsername, theUserFirstName, theUserLastName, theUserEmail, theUserPassword, theUserInactive);
+			OnlineUser users = new OnlineUser(theId, theUsername, theUserFirstName, theUserLastName, theUserEmail, theUserId, theUserPassword, theUserInactive);
 			OnlineUserArray[count] = users;
 			count++;
 		}
 
 		// If you use println it goes to the console without running tomcat
-		System.out.println("getUserById: theInactive: " + OnlineUserArray[0] + "\n");
+		System.out.println(OnlineUserArray[0]);
 
 		if(count > 0) {
 			OnlineUserArray = Arrays.copyOf(OnlineUserArray, count);
@@ -207,19 +302,21 @@ public class UserFacade {
 			String theUserFirstName = theUserObject.getFirstName();
 			String theUserLastName = theUserObject.getLastName();
 			String theUserEmail = theUserObject.getEmail();
+			String theUserId = theUserObject.getUserId();
 			String theUserPassword = theUserObject.getPassword();	
 			Boolean theInactive = theUserObject.getInactive();
 
 			// Create prepared statement
-			PreparedStatement createStmt = con.prepareStatement("UPDATE onlineforms_user SET userName = ?, userFirstName = ?, userLastName = ?, userEmail = ?, userPassword = ?, inactive = ? WHERE id = ?");
+			PreparedStatement createStmt = con.prepareStatement("UPDATE onlineforms_user SET userName = ?, userFirstName = ?, userLastName = ?, userEmail = ?, userId = ?, userPassword = ?, inactive = ? WHERE id = ?");
 
 			createStmt.setString(1, theUsername);
 			createStmt.setString(2, theUserFirstName);	
 			createStmt.setString(3, theUserLastName);
 			createStmt.setString(4, theUserEmail);
-			createStmt.setString(5, theUserPassword);
-			createStmt.setBoolean(6, theInactive);
-			createStmt.setInt(7, theId);									
+			createStmt.setString(5, theUserId);
+			createStmt.setString(6, theUserPassword);
+			createStmt.setBoolean(7, theInactive);
+			createStmt.setInt(8, theId);									
 
 			// The executeUpdate returns the numner of rows affected, we expect 1
 			int res = createStmt.executeUpdate();
@@ -244,9 +341,10 @@ public class UserFacade {
 				String updatedUserFirstName = rs.getString("userFirstName");
 				String updatedUserLastName = rs.getString("userLastName");
 				String updatedUserEmail = rs.getString("userEmail");
+				String updatedUserId = rs.getString("userId");
 				String updatedUserPassword = rs.getString("userPassword");	
 				Boolean updatedInactive = rs.getBoolean("inactive");		
-				OnlineUser users = new OnlineUser(theId2, updatedUsername, updatedUserFirstName, updatedUserLastName, updatedUserEmail, updatedUserPassword, updatedInactive);
+				OnlineUser users = new OnlineUser(theId2, updatedUsername, updatedUserFirstName, updatedUserLastName, updatedUserEmail, updatedUserId, updatedUserPassword, updatedInactive);
 				System.out.println(users);
 				OnlineUserArray[count] = users;
 				count++;
@@ -255,11 +353,24 @@ public class UserFacade {
 			if (count > 0) {
 				// this is to make sure we copied at least 1 item in the array
 				OnlineUserArray = Arrays.copyOf(OnlineUserArray, count);
-				return OnlineUserArray;
 			} else {
 				// this means we didn't manage to insert data into array
 				return null;
 			}
+			
+			//update authenticated_Session table userId
+			PreparedStatement createStmt2 = con.prepareStatement("UPDATE authenticated_Session SET userId = ? WHERE userName = ?");
+			createStmt2.setString(1, theUserId);
+			createStmt2.setString(2, theUsername);
+			
+			// The executeUpdate returns the numner of rows affected, we expect 1
+			int res2 = createStmt2.executeUpdate();
+
+			// for debugging purposes print result to tomcat console
+			System.out.println("Result is: " + res2);
+			
+			return OnlineUserArray;
+			
 		} else {
 			// this means we didn't manage to insert data into database
 			return null;
@@ -277,7 +388,7 @@ public class UserFacade {
 			stmt.setInt(1, theId);
 			ResultSet rs = stmt.executeQuery();
 			
-			//Build the array of user objects
+			//Build the array of SpecialPermissionForm objects
 			OnlineUser[] OnlineUserArray = new OnlineUser[100];
 			int count = 0;
 			while (rs.next()) {
@@ -286,9 +397,10 @@ public class UserFacade {
 				String theUserFirstName = rs.getString("userFirstName");
 				String theUserLastName = rs.getString("userLastName");
 				String theUserEmail = rs.getString("userEmail");
+				String theUserId = rs.getString("userId");
 				String theUserPassword = rs.getString("userPassword");
 				Boolean theUserInactive = rs.getBoolean("inactive");			
-				OnlineUser users = new OnlineUser(theId, theUsername, theUserFirstName, theUserLastName, theUserEmail, theUserPassword, theUserInactive);
+				OnlineUser users = new OnlineUser(theId, theUsername, theUserFirstName, theUserLastName, theUserEmail, theUserId, theUserPassword, theUserInactive);
 				OnlineUserArray[count] = users;
 				count++;
 			}
@@ -328,85 +440,4 @@ public class UserFacade {
 				return null;
 			}				
 	}//end updateUser class	
-	
-	/**
-		Authentication method for user.
-	*/
-	public int authenticateUser(String theUsername, String thePassword) throws SQLException, ClassNotFoundException, NamingException{
-		
-		// Get the connection from the DataAccess singleton
-		Connection con = dao.getConnection();
-			
-		//Execute the query
-		PreparedStatement stmt = con.prepareStatement("SELECT userName, userPassword FROM onlineforms_user WHERE userName = ? AND userPassword = ?");
-		stmt.setString(1, theUsername);
-		stmt.setString(2, thePassword);
-		ResultSet rs = stmt.executeQuery();
-		
-		//System.out.println("In authenticateUser(UserFacade) Authentication Result is: " + rs);
-		
-		String userName = "";
-		String passWord = "";
-		
-		while(rs.next()){
-		
-			userName = rs.getString(1);
-			passWord = rs.getString(2);
-		}
-	
-		if(rs != null){
-			
-			if(userName.equals(theUsername) && passWord.equals(thePassword)){
-				Calendar calender = Calendar.getInstance();
-				java.sql.Timestamp timeStampObject = new java.sql.Timestamp(calender.getTime().getTime());
-				
-				String sess_id = userName + timeStampObject.toString();
-				
-				PreparedStatement createStmt = con.prepareStatement("INSERT INTO authenticated_Session(userName, userPassword, TS, session_id) values (?,?,?,?)");
-				createStmt.setString(1, userName);
-				createStmt.setString(2, passWord);
-				createStmt.setTimestamp(3, timeStampObject);
-				createStmt.setString(4, sess_id);
-				
-				int res2 = createStmt.executeUpdate();
-				
-				System.out.println("Result 2 is: " + res2);
-				
-				return 1; //case that the test passes
-			}else{
-				
-				return 0;// password and/or username don't match
-			}
-		}
-		else{
-			
-			//didn't retrieve a row from the database meaning either the username and/or password didn't match
-			return 0; // case that the test failed
-		}
-	}//end authenticateUser class
-	
-	public int deauthenticateUser(int theId) throws SQLException, ClassNotFoundException, NamingException
-	{
-			// Get the connection from the IgredinetDataAccess singleton
-			Connection con = dao.getConnection();
-				
-			//check if they're logged in
-			PreparedStatement stmt = con.prepareStatement("SELECT * FROM authenticated_Session WHERE id = ?");
-			stmt.setInt(1, theId);
-			ResultSet rs = stmt.executeQuery();
-			
-			if(rs != null)
-				{
-					int theId2 = theId;
-					PreparedStatement pstmt = con.prepareStatement("DELETE FROM authenticated_Session WHERE id = ?");
-					pstmt.setInt(1, theId2);
-					ResultSet rs2 = pstmt.executeQuery();
-					
-					return 1;
-						
-				}
-			else //they weren't logged in
-				{return 0;}
-			
-	}
 }//end UserFacade class

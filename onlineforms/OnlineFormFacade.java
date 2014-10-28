@@ -1,5 +1,4 @@
 package com.cs490;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.naming.Context;
@@ -42,7 +41,7 @@ public class OnlineFormFacade {
 			int theId = rs.getInt(1);
 			//String theStudentName = rs.getString(2);
 			String theCourseDept = rs.getString(2);
-			int theCourseNumber = rs.getInt(3);
+			String theCourseNumber = rs.getString(3);
 			String theSemester = rs.getString(4);
 			int theYear = rs.getInt(5);
 			String theTitle = rs.getString(6);

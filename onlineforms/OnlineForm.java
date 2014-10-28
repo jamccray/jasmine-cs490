@@ -1,36 +1,36 @@
 package com.cs490;
 
+import java.util.*;
+
 public class OnlineForm {
 	// Default Constructor
 	private int id;
 	//private String studentName;
 	private String courseDept;
-	private int courseNumber;
+	private String courseNumber;
 	private String semester;
 	private int year;
 	private String title;
 	
 	
-	public OnlineForm(int id, String courseDept, int courseNumber, String semester, int year, String title)
+	public OnlineForm(int id, String courseDept, String courseNumber, String semester, int year, String title)
 	{
-		this.id = id;
-		//this.studentName = studentName;
-		this.courseDept = courseDept;
-		this.courseNumber = courseNumber;
-		this.semester = semester;
-		this.year = year;
-		this.title = title;
+		setId(this.id);
+		setCourseDept(courseDept);
+		setCourseNumber(courseNumber);
+		setSemester(semester);
+		setYear(year);
+		setTitle(title);
 	}
 	
-	public OnlineForm(String courseDept, int courseNumber, String semester, int year, String title)
+	public OnlineForm(String courseDept, String courseNumber, String semester, int year, String title)
 	{
-		id = 0;
-		//this.studentName = studentName;
-		this.courseDept = courseDept;
-		this.courseNumber = courseNumber;
-		this.semester = semester;
-		this.year = year;
-		this.title = title;
+		this.id = 0;
+		setCourseDept(courseDept);
+		setCourseNumber(courseNumber);
+		setSemester(semester);
+		setYear(year);
+		setTitle(title);
 	}
 	
 	public String toString()
@@ -44,9 +44,23 @@ public class OnlineForm {
 		return id;
 	}
 	
-	public void setId(int id)
-	{
-		this.id = id;
+	public void setId(int id) throws InputMismatchException{
+	
+		try{
+			
+			if(id < 0){
+				System.out.println("Error- Please enter a non-negative integer");
+				
+			}else{
+			
+				this.id = id;
+			
+			}
+		}catch(InputMismatchException e){
+		
+			System.out.println("Error - Value to be set was not a Integer");
+		}
+		
 	}
 	
 	/**
@@ -66,19 +80,50 @@ public class OnlineForm {
 		return courseDept;
 	}
 	
-	public void setCourseDept(String courseDept)
-	{
-		this.courseDept = courseDept;
+	public void setCourseDept(String courseDept) throws InputMismatchException{
+	
+		try{
+		
+			if(courseDept.equals(null) || courseDept == ""){
+			
+				System.out.println("Error - Invalid input.");
+			
+			}else{
+			
+				this.courseDept = courseDept;
+			}
+		}catch(InputMismatchException e){
+		
+			System.out.println("Error - Value to be set was not a String");
+		
+		}
+		
+
 	}
 	
-	public int getCourseNumber()
+	public String getCourseNumber()
 	{
 		return courseNumber;
 	}
 	
-	public void setCourseNumber(int courseNumber)
-	{
-		this.courseNumber = courseNumber;
+	public void setCourseNumber(String courseNumber) throws InputMismatchException{
+	
+		try{
+		
+			if(courseNumber.equals(null) || courseNumber == "" ){
+				
+				System.out.println("Error - Invalid input");
+			
+			}else{
+			
+				this.courseNumber = courseNumber;
+			
+			}
+		}catch(InputMismatchException e){
+			
+				System.out.println("Error- Value to be set was not above 100");
+		}
+		
 	}
 	
 	public String getSemester()
@@ -86,9 +131,26 @@ public class OnlineForm {
 		return semester;
 	}
 	
-	public void setSemester(String semester)
-	{
-		this.semester = semester;
+	public void setSemester(String semester) throws InputMismatchException{
+	
+		try{	
+		
+			if(semester.equals(null) || semester == ""){
+			
+				System.out.println("Error - Invalid Input.");
+			
+			}else{
+			
+				this.semester = semester;
+			}
+			
+		}catch(InputMismatchException e){
+		
+			System.out.println("Error-Value to be set was not a String");
+		}
+			
+	
+		
 	}
 	
 	public int getYear() 
@@ -96,9 +158,24 @@ public class OnlineForm {
 		return year;
 	}
 	
-	public void setYear(int year)
-	{
-		this.year = year;
+	public void setYear(int year) throws InputMismatchException{
+	
+		try{
+		
+			if(year < 1900){
+			
+				System.out.println("Error - Invalid input");
+			
+			}else{
+			
+				this.year = year;
+			}
+		}catch(InputMismatchException e){
+		
+			System.out.println("Error-Value to be set was not above 1900");
+		}
+	
+		
 	}
 	
 	public String getTitle() 
@@ -106,11 +183,24 @@ public class OnlineForm {
 		return title;
 	}
 	
-	public void setTitle(String title)
-	{
-		this.title = title;
+	public void setTitle(String title) throws InputMismatchException{
+	
+		try{
+		
+			if(title.equals(null) || title == ""){
+			
+				System.out.println("Error - Invalid input.");
+			
+			}else{
+			
+				this.title = title;
+			}
+		}catch(InputMismatchException e){
+		
+			System.out.println("Error- Value to be set was not a String.");
+		}
+	
+		
 	}
 }
-	
-	
 	

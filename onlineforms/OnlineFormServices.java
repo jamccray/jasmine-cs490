@@ -31,7 +31,7 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 
 @Path("online")
-public class OnlineFormServices {
+public class OnlineFormServices{
 	
 	//The optional id indicates a path parameter ( a paramenter
 	// passed directly in the URL path
@@ -58,25 +58,31 @@ public class OnlineFormServices {
 		//with the matching id
 		OnlineUser[] resultArray = iFacade.getUserById(intId);
 		
-		//Create a Json string representation of the array of form
-		if(resultArray != null) {
-			Gson theGsonobj = new Gson();
-			String result = theGsonobj.toJson(resultArray);
-			
-			//Add the JSON string to the response message body.
-			ResponseBuilder rb = Response.ok(result, MediaType.TEXT_PLAIN);
-			
-			//Setting the HTTP status code to 200
-			rb.status(200);
-			
-			//Create and return the Response object
-			return rb.build();
-			
-		}//end if
+		String valid = iFacade.sessionValid(resultArray[0].user_id);
+		System.out.println("In (OnlineFormServices) Valid: " + valid);
 		
-		else { //form not found; pick an error status code and send empty response object
-			return Response.status(704).build();
-		}//end else
+		if(valid != null){
+			//Create a Json string representation of the array of form
+			if(resultArray != null) {
+				Gson theGsonobj = new Gson();
+				String result = theGsonobj.toJson(resultArray);
+				
+				//Add the JSON string to the response message body.
+				ResponseBuilder rb = Response.ok(result, MediaType.TEXT_PLAIN);
+				
+				//Setting the HTTP status code to 200
+				rb.status(200);
+				
+				//Create and return the Response object
+				return rb.build();
+				
+			}//end if	
+			else { //form not found; pick an error status code and send empty response object
+				return Response.status(704).build();
+			}//end else
+		}else{
+			return Response.status(401).build();
+		}
 	}//end getUserById method
 	
 	//The @QueryParam("name") looks for a section of the URL
@@ -95,25 +101,30 @@ public class OnlineFormServices {
 		OnlineUser[] resultArray = iFacade.getUserByUserName(theUsername);
 		System.out.println(resultArray);
 		
-		//Create a Json string representation of the array of form
-		if(resultArray != null) {
-			Gson theGsonobj = new Gson();
-			String result = theGsonobj.toJson(resultArray);
-			
-			//Add the JSON string to the response message body.
-			ResponseBuilder rb = Response.ok(result, MediaType.TEXT_PLAIN);
-			
-			//Setting the HTTP status code to 200
-			rb.status(200);
-			
-			//Create and return the Response object
-			return rb.build();
-			
-		}//end if
+		String valid = iFacade.sessionValid(resultArray[0].user_id);
 		
-		else { //form not found; pick an error status code and send empty response object
-			return Response.status(704).build();
-		}//end else
+		if(valid != null){
+				//Create a Json string representation of the array of form
+				if(resultArray != null) {
+					Gson theGsonobj = new Gson();
+					String result = theGsonobj.toJson(resultArray);
+					
+					//Add the JSON string to the response message body.
+					ResponseBuilder rb = Response.ok(result, MediaType.TEXT_PLAIN);
+					
+					//Setting the HTTP status code to 200
+					rb.status(200);
+					
+					//Create and return the Response object
+					return rb.build();
+					
+				}//end if				
+				else { //form not found; pick an error status code and send empty response object
+					return Response.status(704).build();
+				}//end else
+			}else{
+				return Response.status(401).build();
+			}
 	}//end getFormByName method
 
 	@Path("/user") //Same path as retrieve, but different http type (POST)
@@ -127,20 +138,21 @@ public class OnlineFormServices {
 			String newUserFirstName = userFields.getFirst("FirstName");
 			String newUserLastName = userFields.getFirst("LastName");
 			String newUserEmail = userFields.getFirst("Email");
+			String newUserId = userFields.getFirst("StudentID");
 			String newUserPassword = userFields.getFirst("Password");
-			System.out.println( newUserName + " " + newUserFirstName + " " + newUserLastName + " " + newUserEmail + " " + newUserPassword);
+			System.out.println( newUserName + " " + newUserFirstName + " " + newUserLastName + " " + newUserEmail + " " + newUserId + " " + newUserPassword);
 			
 			//Get a reference to the FormFacade singleton object
 			UserFacade iFacade = UserFacade.getInstance();
 	
 			//Create SpecialPrmissionForm array with new values entered
-			OnlineUser theUserToAdd = new OnlineUser(newUserName, newUserFirstName, newUserLastName, newUserEmail, newUserPassword);
+			OnlineUser theUserToAdd = new OnlineUser(newUserName, newUserFirstName, newUserLastName, newUserEmail, newUserId, newUserPassword);
 			System.out.println(theUserToAdd);
 			
 			//Call the FormFacade method getForms to get the new form(s)
 			OnlineUser[] resultArray = iFacade.createUser(theUserToAdd);
 			System.out.println(resultArray);
-	
+		
 			//Create a Json string representation of the array of forms
 			if(resultArray != null) {
 				Gson theGsonobj = new Gson();
@@ -174,10 +186,12 @@ public class OnlineFormServices {
 		//with the matching forms
 		OnlineUser[] resultArray = iFacade.getOnlineUsers();
 		
+		String result = "";
+
 		//Create a Json string representation of the array of forms
 		if(resultArray != null) {
 			Gson theGsonobj = new Gson();
-			String result = theGsonobj.toJson(resultArray);
+			result = theGsonobj.toJson(resultArray);
 			
 			System.out.print(result);
 			
@@ -190,11 +204,10 @@ public class OnlineFormServices {
 			//Create and return the Response object
 			return rb.build();
 			
-		}//end if
-		
+		}//end if				
 		else { //user not found; pick an error status code and send empty response object
 			return Response.status(404).build();
-		}//end else
+		}//end else			
 	}//end method getOnlineUsers 
 	
 	@Path("/user/{id}")	// same path as retrieve, but different http type (PUT)
@@ -220,6 +233,7 @@ public class OnlineFormServices {
 			String theUserFirstName = userFields.getFirst("userFirstName");
 			String theUserLastName = userFields.getFirst("userLastName");
 			String theUserEmail = userFields.getFirst("userEmail");
+			String theUserId = userFields.getFirst("userId");
 			String theUserPassword = userFields.getFirst("userPassword");	
 			String theInactive = userFields.getFirst("inactive");				
 
@@ -227,34 +241,38 @@ public class OnlineFormServices {
 			UserFacade iFacade = UserFacade.getInstance();
 			// Create a user instance with the data
 			// Boolean.toString(theInactive)
-			OnlineUser userObject = new OnlineUser( theId, theUsername, theUserFirstName, theUserLastName, theUserEmail, theUserPassword, Boolean.valueOf(theInactive) );
+			OnlineUser userObject = new OnlineUser( theId, theUsername, theUserFirstName, theUserLastName, theUserEmail, theUserId, theUserPassword, Boolean.valueOf(theInactive) );
 
 			// Call the IngredientFacade method createIngredient
 			// to update the record with the matching id
-			OnlineUser[] updateResult = iFacade.updateUser( userObject );			
+			OnlineUser[] updateResult = iFacade.updateUser( userObject );		
 
-			// System.out.println("the json: \n" + result);
+			String valid = iFacade.sessionValid(updateResult[0].user_id);
 
-			// Create a Json string representation of the array of ingredients
-			if (updateResult != null) {
-				Gson theGsonObj = new Gson();
-				String result = theGsonObj.toJson(updateResult);	
-				
-				// Add the JSON string to the response message body
-				ResponseBuilder rb = Response.ok(result, MediaType.TEXT_PLAIN);
-				// Setting the HTTP status code to 200
-				rb.status(204);
-				// Create and return the Response obbject
-				return rb.build();			
-			} else {
-				// ingredient not inserted
-				//Gson theGsonObj = new Gson();
-				//Ingredient[] blankIngArray = new Ingredient[1];
-				//blankIngArray[0] = new Ingredient(0, "none", "none");
-				//String blankResult = theGsonObj.toJson(blankIngArray);
-				
-				return Response.status(700).build();
-			}			
+			if(valid != null){
+					// Create a Json string representation of the array of ingredients
+					if (updateResult != null) {
+						Gson theGsonObj = new Gson();
+						String result = theGsonObj.toJson(updateResult);	
+						
+						// Add the JSON string to the response message body
+						ResponseBuilder rb = Response.ok(result, MediaType.TEXT_PLAIN);
+						// Setting the HTTP status code to 200
+						rb.status(204);
+						// Create and return the Response obbject
+						return rb.build();			
+					} else {
+						// ingredient not inserted
+						//Gson theGsonObj = new Gson();
+						//Ingredient[] blankIngArray = new Ingredient[1];
+						//blankIngArray[0] = new Ingredient(0, "none", "none");
+						//String blankResult = theGsonObj.toJson(blankIngArray);
+						
+						return Response.status(700).build();
+					}
+			}else{
+				return Response.status(401).build();
+			}
 	}//end updateUser class
 
 	@Path("/user/{id}")	// same path as retrieve, but different http type (PUT)
@@ -291,28 +309,32 @@ public class OnlineFormServices {
 			// to update the record with the matching id
 			OnlineUser[] deleteResult = iFacade.deleteUser(theId);			
 
-			// System.out.println("the json: \n" + result);
-
-			// Create a Json string representation of the array of ingredients
-			if (deleteResult != null) {
-				Gson theGsonObj = new Gson();
-				String result = theGsonObj.toJson(deleteResult);	
-				
-				// Add the JSON string to the response message body
-				ResponseBuilder rb = Response.ok(result, MediaType.TEXT_PLAIN);
-				// Setting the HTTP status code to 200
-				rb.status(204);
-				// Create and return the Response object
-				return rb.build();			
-			} else {
-				// ingredient not inserted
-				//Gson theGsonObj = new Gson();
-				//Ingredient[] blankIngArray = new Ingredient[1];
-				//blankIngArray[0] = new Ingredient(0, "none", "none");
-				//String blankResult = theGsonObj.toJson(blankIngArray);
-				
-				return Response.status(404).build();
-			}			
+			String valid = iFacade.sessionValid(deleteResult[0].user_id);
+			
+			if(valid != null){
+					// Create a Json string representation of the array of ingredients
+					if (deleteResult != null) {
+						Gson theGsonObj = new Gson();
+						String result = theGsonObj.toJson(deleteResult);	
+						
+						// Add the JSON string to the response message body
+						ResponseBuilder rb = Response.ok(result, MediaType.TEXT_PLAIN);
+						// Setting the HTTP status code to 200
+						rb.status(204);
+						// Create and return the Response object
+						return rb.build();			
+					} else {
+						// ingredient not inserted
+						//Gson theGsonObj = new Gson();
+						//Ingredient[] blankIngArray = new Ingredient[1];
+						//blankIngArray[0] = new Ingredient(0, "none", "none");
+						//String blankResult = theGsonObj.toJson(blankIngArray);
+						
+						return Response.status(404).build();
+					}
+			}else{
+				return Response.status(401).build();
+			}	
 	}//end updateUser class	
 	
 	@Path("/authSession") //Same path as retrieve, but different http type (POST)
@@ -331,7 +353,8 @@ public class OnlineFormServices {
 			
 			String username = loginFields.getFirst("theUsername");
 			String password = loginFields.getFirst("thePassword");
-			System.out.println( username + " " + password);
+			String sessionID = loginFields.getFirst("theSessionID");
+			System.out.println( username + " " + password + " " + sessionID);
 			
 			//Get a reference to the UserFacade singleton object
 			UserFacade iFacade = UserFacade.getInstance();
@@ -341,7 +364,7 @@ public class OnlineFormServices {
 			//System.out.println(theUserToAdd);
 			
 			//Call the FormFacade method getForms to get the new form(s)
-			int result = iFacade.authenticateUser(username, password);
+			int result = iFacade.authenticateUser(username, password, sessionID);
 			System.out.println("In authenticate User(OnlineFormServices).. result is: " + result);
 	
 			//Create a Json string representation of the array of forms
@@ -364,38 +387,4 @@ public class OnlineFormServices {
 				return Response.status(403).build();
 			}//end else
 	}//end method authSession
-	
-	@Path("/authSession/{id}") 
-	@DELETE				  
-	@Produces("text/plain")
-	@Consumes("application/x-www-form-urlencoded")
-	public Response deauthenticateUser(@PathParam("id") String theID) throws SQLException, ClassNotFoundException, NamingException 
-	{
-		// convert the path parameter to an int
-			int theId = 0;
-			try {
-				theId = Integer.parseInt(theID);
-			} catch (NumberFormatException ne) {
-				// handle error here
-			}			
-			
-			UserFacade iFacade = UserFacade.getInstance();
-			int result = iFacade.deauthenticateUser(theId);
-			
-			if(result == 1) //succesfully deleted
-			{
-				ResponseBuilder rb = Response.ok(result, MediaType.TEXT_PLAIN);
-		
-				//Setting the HTTP status code to 200
-				rb.status(201);
-		
-				//Create and return the Response object
-				return rb.build();
-				
-			}
-			else { 
-				return Response.status(403).build();
-			}//end else
-
-	}//end delete authSession
 }//end class file

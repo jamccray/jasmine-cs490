@@ -34,7 +34,7 @@ SELECT * from onlineforms_user;
 -- authenticated session; users are added to this table when they succesfully log in
 drop table if exists authenticated_Session; 
 
-create table authenticated_Session (
+create table authenticated_Session(
 id int auto_increment not null, 
 userName varchar(15) not null,
 userPassword varchar(20) not null,
@@ -58,13 +58,14 @@ drop table if exists onlineforms_forms;
 
 create table onlineforms_forms (
 id int not null auto_increment,
-title varchar (60) not null,
 courseDept varchar(10) not null,
 courseNumber varchar(7) not null,
 semester varchar(20) not null,
 year int not null,
+title varchar (60) not null,
 primary key(id)
 );
+select * from onlineforms_forms;
 
 -- users_forms; the relationship is created when a form is saved for a certain user
 drop table if exists users_forms;
