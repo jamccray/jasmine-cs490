@@ -58,14 +58,18 @@ drop table if exists onlineforms_forms;
 
 create table onlineforms_forms (
 id int not null auto_increment,
-courseDept varchar(10) not null,
-courseNumber varchar(7) not null,
-semester varchar(20) not null,
-year int not null,
 title varchar (60) not null,
 primary key(id)
 );
+
+insert into onlineforms_forms set title = "Special Permission";
+insert into onlineforms_forms set title = "Change of Major/Minor/Specialization";
+insert into onlineforms_forms set title = "Transcript Request";
+
 select * from onlineforms_forms;
+
+-- insert into onlineforms_forms set
+	
 
 -- users_forms; the relationship is created when a form is saved for a certain user
 drop table if exists users_forms;
@@ -89,7 +93,6 @@ CONSTRAINT `fk_users_forms_forms1`
 );
 
 select * from users_forms;
-
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

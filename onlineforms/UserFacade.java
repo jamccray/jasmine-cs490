@@ -36,7 +36,7 @@ public class UserFacade {
 		Connection con = dao.getConnection();
 			
 		//Execute the query
-		PreparedStatement stmt = con.prepareStatement("SELECT id, userName, userPassword, userId FROM onlineforms_user WHERE userName = ? AND userPassword = ?");
+		PreparedStatement stmt = con.prepareStatement("SELECT userName, userPassword, userId, id FROM onlineforms_user WHERE userName = ? AND userPassword = ?");
 		stmt.setString(1, theUsername);
 		stmt.setString(2, thePassword);
 		ResultSet rs = stmt.executeQuery();
@@ -47,13 +47,14 @@ public class UserFacade {
 		String passWord = "";
 		String userId = "";
 		//foreign key in the authenticated_Session table
-		int onlineforms_user_id = rs.getInt("id");
+		int onlineforms_user_id = 0;
 		
 		while(rs.next()){
 		
 			userName = rs.getString(1);
 			passWord = rs.getString(2);
 			userId = rs.getString(3);
+			onlineforms_user_id = rs.getInt(4);
 		}
 	
 		if(rs != null){
@@ -114,6 +115,31 @@ public class UserFacade {
 			return null; // case that the test failed
 		}
 	}//end sessionValid class
+	
+	public int deauthenticateUser(int theId) throws SQLException, ClassNotFoundException, NamingException
+	{
+			// Get the connection from the IgredinetDataAccess singleton
+			Connection con = dao.getConnection();
+				
+			//check if they're logged in
+			PreparedStatement stmt = con.prepareStatement("SELECT * FROM authenticated_Session WHERE id = ?");
+			stmt.setInt(1, theId);
+			ResultSet rs = stmt.executeQuery();
+			
+			if(rs != null)
+				{
+					int theId2 = theId;
+					PreparedStatement pstmt = con.prepareStatement("DELETE FROM authenticated_Session WHERE id = ?");
+					pstmt.setInt(1, theId2);
+					ResultSet rs2 = pstmt.executeQuery();
+					
+					return 1;
+						
+				}
+			else //they weren't logged in
+				{return 0;}
+			
+	}
 	
 	public OnlineUser[] getOnlineUsers() throws SQLException {
 		//get the connection from the FormDataAccess singleton object

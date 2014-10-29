@@ -1,0 +1,305 @@
+<html>
+<head>
+<title>Group 2's Online Form Page</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+</script>
+<script>
+$(document) .ready( function() {
+alert("running script");
+
+function getCookie(username) {
+    var name = username + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
+    }
+    return "";
+}
+
+function checkCookie() {
+    var user = getCookie("username");
+    if (user != "") {
+        alert("Welcome " + user);
+    } else {
+		alert("Please login.");
+		window.location.href="http://localhost:8080/formwebapp/login.html"
+    }
+}
+
+getCookie("username");
+checkCookie();
+
+$("#btnAll") .click(function() {
+	alert("clicked");
+	$.ajax( {
+		url: "http://localhost:8080/formwebapp/resources/online/user/",
+		type: "GET",
+		dataType: "text",
+	success: function(result) {
+		alert("success"); 
+		var UserArray = JSON.parse(result);
+		alert(UserArray);
+		var output="<h3>Users List</h3>";
+		output += "<ul>";
+		for(var i=0; i<UserArray.length;i++)
+		{
+			output += "<li>" + "<b>id:</b> " + UserArray[i].id + "<b> Username: </b>"+ UserArray[i].userName + "<b> Name: </b>" + UserArray[i].user_firstName + " " + UserArray[i].user_lastName + "<b> Email: </b>" + UserArray[i].user_email + "<b> Student ID: </b>" + UserArray[i].user_id + "<b> Password: </b>" + UserArray[i].user_password + "<b> Inactive: </b>" + UserArray[0].user_inactive + "</li>";
+		}
+		output += "</ul>";
+		alert(output);
+		$("#p_retrieveAll") .html(output); 
+		},
+	error:function(xhr) {
+		alert("error");
+		$("#p_retrieveAll").html("Error:"+xhr.status+ " " + xhr.statusText);}
+	
+	} );
+
+});
+
+$("#btnOneId") .click(function() {
+	alert("clicked");
+	var inputId=document.getElementById("t_userId").value;
+	var theUrl = "http://localhost:8080/formwebapp/resources/online/user/"+inputId;
+	$.ajax( {
+		url: theUrl,
+		type: "GET",
+		dataType: "text",
+		success: function(result) {
+			alert("success");
+			alert(result);
+		var UserArray = JSON.parse(result);
+		alert(UserArray);
+		fillUpdateFields(UserArray);
+		var output="<ul><li>"  + "<b>id:</b> " + UserArray[0].id + "<b> Username: </b>"+ UserArray[0].userName + "<b> Name: </b>" + UserArray[0].user_firstName + " " + UserArray[0].user_lastName + "<b> Email: </b>" + UserArray[0].user_email + "<b> Student ID: </b>" + UserArray[0].user_id + "<b> Password: </b>" + UserArray[0].user_password + "<b> Inactive: </b>" +UserArray[0].user_inactive + "</li></ul>";
+		alert(output);
+			$("#p_retrieveOneId").html(output); },
+		error:function(xhr) {
+			alert("error");
+			$("#p_retrieveOneId").html("Error:"+xhr.status+" "+ xhr.statusText);}
+	});
+});
+
+$("#btnUsername") .click(function() {
+	alert ("clicked");
+	var username=document.getElementById("t_username").value;
+	var theUrl = "http://localhost:8080/formwebapp/resources/online/user/un?username="+username;
+	$.ajax( {
+		url: theUrl,
+		type: "GET",
+		dataType: "text",
+		success: function(result) {
+			alert("success");
+			var UserArray = JSON.parse(result);
+		alert(UserArray);
+		var output="<ul><li>"  + "<b>id:</b> " + UserArray[0].id + "<b> Username: </b>"+ UserArray[0].userName + "<b> Name: </b>" + UserArray[0].user_firstName + " " + UserArray[0].user_lastName + "<b> Email: </b>" + UserArray[0].user_email + "<b> Student ID: </b>" + UserArray[0].user_id + "<b> Password: </b>" + UserArray[0].user_password + "<b> Inactive: </b>" +UserArray[0].user_inactive + "</li></ul>";
+		alert(output);
+			$("#p_retrieveOneName").html(output); },
+		error:function(xhr) {
+			alert("error");
+			$("#p_retrieveOneName").html("Error:"+xhr.status+" "+ xhr.statusText);}
+	} );
+});
+
+$("#btnCreateUser") .click(function() {
+	alert ("clicked");
+	var newUserName=document.getElementById("t_UserNameCreate").value;
+	var newUserFirstName=document.getElementById("t_UserFirstNameCreate").value;
+	var newUserLastName=document.getElementById("t_UserLastNameCreate").value;
+	var newUserEmail=document.getElementById("t_UserEmailCreate").value;
+	var newUserId=document.getElementById("t_UserIdCreate").value;
+	var newUserPassword=document.getElementById("t_UserPasswordCreate").value;
+	var theData= "Username="+newUserName+"&"+"FirstName="+newUserFirstName+"&"+"LastName="+newUserLastName+"&"+"Email="+newUserEmail+"&"+"StudentID="+newUserId+"&"+"Password="+newUserPassword;
+	alert("Sending: "+theData);
+	var theUrl = "http://localhost:8080/formwebapp/resources/online/user/";
+	$.ajax( {
+		url: theUrl,
+		type: "POST",
+		dataType: "text",
+		contentType: "application/x-www-form-urlencoded",
+		data: theData,
+		success: function(result, status, jqxhr) { 
+						alert("success: " +status); 
+						
+						var UserArray = JSON.parse(result);
+						alert(UserArray);
+						var output ="<h3>Just added</h3>";
+						output += "<ul>";
+						
+						for(var i=0; i<UserArray.length ;i++)
+						{
+								output += "<li>"  + "<b>id:</b> " + UserArray[i].id + "<b> Username: </b>" + UserArray[i].userName + "<b> Name: </b>" + UserArray[i].user_firstName + " " + UserArray[i].user_lastName + "<b> Email: </b>" + UserArray[i].user_email + "<b> Student ID: </b>" + UserArray[i].user_id +  "<b> Password: </b>" + UserArray[i].user_password + "</li>";
+						}
+						output += "</ul>";
+						alert(output);
+						
+						$("#p_createUser").html(output); 
+						},
+		error:function(xhr, status, errorThrown) { 
+						alert("error: "+status+" e: "+errorThrown); 
+						$("#p_createUser").html("Error:"+xhr.status+" "+ xhr.statusText);
+			},
+	} );
+});
+
+$("#btnUpdateUser") .click(function() {
+	currentUserId = window.userID;
+
+	if(!currentUserId) {
+		alert('User ID missing, please retrieve a user first');
+		return false;
+	}
+
+	var theUrl = "http://localhost:8080/formwebapp/resources/online/user/"+currentUserId;
+
+	var userFields = getUserFields();
+
+	var theData = "userName=" + userFields.userName + "&" + 
+					"userFirstName=" + userFields.user_firstName + "&" + 
+					"userLastName=" + userFields.user_lastName + "&" + 
+					"userEmail=" + userFields.user_email + "&" + 
+					"userId=" + userFields.user_id + "&" +
+					"userPassword=" + userFields.user_password;
+
+	$.ajax({
+		url: theUrl,
+		type: "PUT",
+		dataType: "text",
+		contentType: "application/x-www-form-urlencoded",
+		data: theData,
+		success: function (result, status, jqxhr) {
+			alert("success:" + status);		
+		},
+		error: function(event, xhr, status, errorThrown) {
+			console.log(status + "Error:" + xhr.status + " " + xhr.statusText + "," + xhr.responseText);
+			alert("error: " + status + " e: " + errorThrown);
+		}
+	});
+
+});	// End click function
+
+function fillUpdateFields(UserArray) {
+	// this creates a global variable to use later in the update button click function
+	window.userID = UserArray[0].id;
+
+	$("#t_updateUserName").val(UserArray[0].userName);
+	$("#t_updateFirstName").val(UserArray[0].user_firstName);
+	$("#t_updateLastName").val(UserArray[0].user_lastName);
+	$("#t_updateEmail").val(UserArray[0].user_email);
+	$("#t_updateUserId").val(UserArray[0].user_id);
+	$("#t_updatePassword").val(UserArray[0].user_password);
+}
+
+function getUserFields() {
+	var data = {
+		'userName': $("#t_updateUserName").val(),
+		'user_firstName': $("#t_updateFirstName").val(),
+		'user_lastName': $("#t_updateLastName").val(),
+		'user_email': $("#t_updateEmail").val(),
+		'user_id': $("#t_updateUserId").val(),
+		'user_password': $("#t_updatePassword").val(),
+	};
+	return data;
+}
+
+$("#btnDeleteById") .click(function() {
+	alert("clicked");
+	var inputId=document.getElementById("t_userId2").value;
+	if(!inputId) {
+		alert('User ID missing, please enter a valid user.');
+		return false;
+	}
+	var theUrl = "http://localhost:8080/formwebapp/resources/online/user/"+inputId;
+	$.ajax( {
+		url: theUrl,
+		type: "DELETE",
+		dataType: "text",
+		success: function (status) {
+			alert("success");		
+		},
+		error: function(event, xhr, status, errorThrown) {
+			console.log(status + "Error:" + xhr.status + " " + xhr.statusText + "," + xhr.responseText);
+			alert("error: " + status + " e: " + errorThrown);
+		}
+	});
+
+});
+});
+
+</script>
+
+</head>
+<body>
+<h3>Testing Web Services</h3>
+<div id="retrieveAll">
+<button id="btnAll">Click to Retrieve All</button>
+<p id="p_retrieveAll">Users List Goes here</p>
+</div>
+<div id="retrieveOneId">
+<input type="text" id="t_userId" value="type id here" />
+<button id="btnOneId">Click to Retrieve by Id</button>
+<p id="p_retrieveOneId">User By Id Goes here</p>
+</div>
+<div id="retrieveOneName">
+<label form="t_username">Username: </label>
+<input type="text" id="t_username" value="type username here"/>
+<button id="btnUsername">Click to Retrieve by Username</button>
+<p id="p_retrieveOneName">Username Goes here</p>
+</div>
+<div id="createUser">
+	<h4>Add User</h4>
+	
+		<label form="t_UserNameCreate">Username: </label>
+		<input type="text" id="t_UserNameCreate" value="type username here" />
+		<br />
+		<label form="t_UserFirstNameCreate">First Name: </label>
+		<input type="text" id="t_UserFirstNameCreate" value="type first name here" />
+		<br />
+		<label form="t_UserLastNameCreate">Last Name: </label>
+		<input type="text" id="t_UserLastNameCreate" value="type last name here" />
+		<br />
+		<label form="t_UserEmailCreate">Email: </label>
+		<input type="text" id="t_UserEmailCreate" value="type email here" />
+		<br />
+		<label form="t_UserIdCreate">Student ID: </label>
+		<input type="text" id="t_UserIdCreate" value="type student ID here" />
+		<br />
+		<label form="t_UserPasswordCreate">Password: </label>
+		<input type="text" id="t_UserPasswordCreate" value="type password here" />
+		<br />
+		<button id ="btnCreateUser">Click to Add this User</button>
+	
+	<p id="p_createUser">Created user goes here</p>
+</div>
+<div id="updateUser">
+	<h4>Update User</h4>
+		
+		<label form="t_updateUserName">Username: </label>
+		<input type="text" id="t_updateUserName" value="" />
+		<br />
+		<label form="t_updateFirstName">First Name: </label>
+		<input type="text" id="t_updateFirstName" value="" />
+		<br />
+		<label form="t_updateLastName">Last Name: </label>
+		<input type="text" id="t_updateLastName" value="" />
+		<br />
+		<label form="t_updateEmail">Email: </label>
+		<input type="text" id="t_updateEmail" value="" />
+		<br />
+		<label form="t_updateUserId">Student ID: </label>
+		<input type="text" id="t_updateUserId" value="" />
+		<br />
+		<label form="t_updatePassword">Password: </label>
+		<input type="text" id="t_updatePassword" value="" />
+		<br />
+		<button id ="btnUpdateUser">Click to Update</button>
+</div>
+<div id="deleteUserbyId">
+<h4>Delete User</h4>
+<input type="text" id="t_userId2" value="type id here" />
+<button id="btnDeleteById">Click to delete user by Id</button>
+</div>
+</body>
+</html>
