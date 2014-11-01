@@ -65,7 +65,7 @@ public class UserFacade {
 				
 				String sess_id = theSessionID;
 				
-				PreparedStatement createStmt = con.prepareStatement("INSERT INTO authenticated_Session(userName, userPassword, userId, TS, session_id) values (?,?,?,?,?,?)");
+				PreparedStatement createStmt = con.prepareStatement("INSERT INTO authenticated_Session(userName, userPassword, userId, TS, session_id, onlineforms_user_id) values (?,?,?,?,?,?)");
 				createStmt.setString(1, userName);
 				createStmt.setString(2, passWord);
 				createStmt.setString(3, userId);
