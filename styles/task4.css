@@ -1,0 +1,32 @@
+body{
+	margin-bottom: 80px;
+}
+
+.page-header{
+	margin-top: 0;
+}
+
+.panel-body{
+	padding-top: 0;
+}
+
+.featuredImg{
+	width: 100%;
+	margin-bottom: 
+}
+.navbar-form{
+	padding-left: 25px;
+	padding-right:25px;
+}
+
+iframe{
+	width: 100%;
+}
+
+.form-group{
+ padding-left:15px;
+}
+
+.list-group{
+	clear:both;
+}

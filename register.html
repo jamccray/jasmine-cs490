@@ -1,0 +1,164 @@
+<html>
+<head>
+<title>Group 2's Online Form Page</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+</script>
+<script>
+$(document) .ready( function() {
+//alert("running script");
+$('.registerPage').hide();    
+
+function getCookie(username) {
+    var name = username + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
+    }
+    return "";
+}
+
+function checkCookie() {
+    var user = getCookie("username");
+    if (user != "") {
+        alert("Welcome " + user);
+		$('.registerPage').show();
+    } else {
+		alert("Please login.");
+		window.location.href="http://localhost:8080/formwebapp/login.html"
+    }
+}
+
+getCookie("username");
+checkCookie();
+
+$("#btnCreateUser") .click(function() {
+	alert ("clicked");
+	//First thing delete register cookie
+	document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+	
+	var newUserName=document.getElementById("t_UserNameCreate").value;
+	var newUserFirstName=document.getElementById("t_UserFirstNameCreate").value;
+	var newUserLastName=document.getElementById("t_UserLastNameCreate").value;
+	var newUserEmail=document.getElementById("t_UserEmailCreate").value;
+	var newUserId=document.getElementById("t_UserIdCreate").value;
+	var newUserPassword=document.getElementById("t_UserPasswordCreate").value;
+	
+	//create new user cookie
+	//convert UTC time to EST
+	var offset = -5.0;
+	var utc_date = new Date();
+	var utc = utc_date.getTime() + (utc_date.getTimezoneOffset() * 60000);
+
+	var cur_date = new Date(utc + (3600000 * offset)); 
+
+	//Add hour for daylight savings time
+	cur_date.setTime(cur_date.getTime() + (60*60*1000));
+		
+	//set expiration time	
+	cur_date.setTime(cur_date.getTime() + (60*30*1000));
+
+	var expires = "expires="+ cur_date.toLocaleString();
+	var cookie = "username=" + newUserName + "; " + expires + "";
+	alert(cookie);	
+
+	var sessionID = newUserName + cur_date.toLocaleString();
+	alert(sessionID);
+	
+	var newSessionID = sessionID;
+	var theData= "Username="+newUserName+"&"+"FirstName="+newUserFirstName+"&"+"LastName="+newUserLastName+"&"+"Email="+newUserEmail+"&"+"StudentID="+newUserId+"&"+"Password="+newUserPassword+"&"+"SessionID="+newSessionID;
+	alert("Sending: "+theData);
+	var theUrl = "http://localhost:8080/formwebapp/resources/online/user/";
+	$.ajax( {
+		url: theUrl,
+		type: "POST",
+		dataType: "text",
+		contentType: "application/x-www-form-urlencoded",
+		data: theData,
+		success: function(result, status, jqxhr) { 
+						alert("success: " +status); 
+						
+						var UserArray = JSON.parse(result);
+						alert(UserArray);
+						var output ="<h3>Just added</h3>";
+						output += "<ul>";
+						
+						for(var i=0; i<UserArray.length ;i++)
+						{
+								output += "<li>"  + "<b>id:</b> " + UserArray[i].id + "<b> Username: </b>" + UserArray[i].userName + "<b> Name: </b>" + UserArray[i].user_firstName + " " + UserArray[i].user_lastName + "<b> Email: </b>" + UserArray[i].user_email + "<b> Student ID: </b>" + UserArray[i].user_id +  "<b> Password: </b>" + UserArray[i].user_password + "</li>";
+						}
+						output += "</ul>";
+						alert(output);
+						currentUserId = UserArray[0].user_id;
+						window.userSID = currentUserId;
+						alert(currentUserId);
+						
+						$("#p_createUser").html(output); 
+						},
+		error:function(xhr, status, errorThrown) { 
+						alert("error: "+status+" e: "+errorThrown); 
+						$("#p_createUser").html("Error:"+xhr.status+" "+ xhr.statusText);
+			},
+	} );
+});
+$("#btnLogout") .click(function() {
+	alert("clicked");
+	currentUserId = window.userSID;
+	/*if(!currentUserId) {
+		alert('User ID missing, please enter a valid user.');
+		return false;
+	}*/
+	var theUrl = "http://localhost:8080/formwebapp/resources/online/authSession/"+currentUserId;
+	$.ajax( {
+		url: theUrl,
+		type: "DELETE",
+		dataType: "text",
+		success: function (status) {
+			alert("Successfully logged out.");
+			document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+			window.location.href="http://localhost:8080/formwebapp/login.html";
+		},
+		error: function(event, xhr, status, errorThrown) {
+			console.log(status + "Error:" + xhr.status + " " + xhr.statusText + "," + xhr.responseText);
+			alert("error: " + status + " e: " + errorThrown);
+		}
+	});
+
+});
+});
+</script>
+</head>
+<body class="registerPage">
+<h3>Registration Page</h3>
+<div id="createUser">
+	<h4>Add User</h4>
+	
+		<label form="t_UserNameCreate">Username: </label>
+		<input type="text" id="t_UserNameCreate" value="type username here" />
+		<br />
+		<label form="t_UserFirstNameCreate">First Name: </label>
+		<input type="text" id="t_UserFirstNameCreate" value="type first name here" />
+		<br />
+		<label form="t_UserLastNameCreate">Last Name: </label>
+		<input type="text" id="t_UserLastNameCreate" value="type last name here" />
+		<br />
+		<label form="t_UserEmailCreate">Email: </label>
+		<input type="text" id="t_UserEmailCreate" value="type email here" />
+		<br />
+		<label form="t_UserIdCreate">Student ID: </label>
+		<input type="text" id="t_UserIdCreate" value="type student ID here" />
+		<br />
+		<label form="t_UserPasswordCreate">Password: </label>
+		<input type="text" id="t_UserPasswordCreate" value="type password here" />
+		<br />
+		<button id ="btnCreateUser">Click to Add this User</button>
+	
+	<p id="p_createUser">Created user goes here</p>
+</div>
+<div id="deauthenticateUser">
+<br />
+<button id="btnLogout">Logout!</button>
+</div>
+</body>
+</html>

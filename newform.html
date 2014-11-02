@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+        <head>
+                <title>Form Manager</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link href = "css/bootstrap.min.css" rel = "stylesheet">
+                
+				<link rel="stylesheet" type="text/css" href="styles/task4.css" media="screen" />
+        </head>
+        <body>
+               
+                <div class = "navbar navbar-inverse navbar-static-top">
+                        <div class = "container">
+                               
+                                <a href = "#" class = "navbar-brand">Form Manager Version 1</a>
+                               
+                                <button class = "navbar-toggle" data-toggle = "collapse" data-target = ".navHeaderCollapse">
+                                        <span class = "icon-bar"></span>
+                                        <span class = "icon-bar"></span>
+                                        <span class = "icon-bar"></span>
+                                </button>
+                               
+                                <div class = "collapse navbar-collapse navHeaderCollapse">
+                               
+                                        <ul class = "nav navbar-nav navbar-right">
+                                       
+                                                <li class = "active"><a href = "index.html">Home</a></li>
+                                                
+                                                <li class = "dropdown">
+                                                       
+                                                        <a href = "#" class = "dropdown-toggle" data-toggle = "dropdown">Social Media <b class = "caret"></b></a>
+                                                        <ul class = "dropdown-menu">
+                                                                <li><a href = "http://twitter.com">Twitter</a></li>
+                                                                <li><a href = "http://facebook.com">Facebook</a></li>
+                                                                <li><a href = "http://plus.google.com">Google+</a></li>
+                                                                <li><a href = "http://instagram.com">Instagram</a></li>
+                                                        </ul>
+                                               
+                                                </li>
+
+												<li class = "dropdown">
+												
+													<a href = "#" class = "dropdown-toggle" data-toggle = "dropdown">Horoscope <b class = "caret"></b></a>
+													<ul class = "dropdown-menu">
+															<li><a href = "http://my.horoscope.com/astrology/free-daily-horoscope-aries.html">Aries</a></li>
+															<li><a href = "http://my.horoscope.com/astrology/free-daily-horoscope-taurus.html">Taurus</a></li>
+															<li><a href = "http://my.horoscope.com/astrology/free-daily-horoscope-gemini.html">Gemini</a></li>
+															<li><a href = "http://my.horoscope.com/astrology/free-daily-horoscope-cancer.html">Cancer</a></li>
+															<li><a href = "http://my.horoscope.com/astrology/free-daily-horoscope-leo.html">Leo</a></li>
+															<li><a href = "http://my.horoscope.com/astrology/free-daily-horoscope-virgo.html">Virgo</a></li>
+															<li><a href = "http://my.horoscope.com/astrology/free-daily-horoscope-libra.html">Libra</a></li>
+															<li><a href = "http://my.horoscope.com/astrology/free-daily-horoscope-scorpio.html">Scorpio</a></li>
+															<li><a href = "http://my.horoscope.com/astrology/free-daily-horoscope-sagittarius.html">Sagittarius</a></li>
+															<li><a href = "http://my.horoscope.com/astrology/free-daily-horoscope-capricorn.html">Capricorn</a></li>
+															<li><a href = "http://my.horoscope.com/astrology/free-daily-horoscope-aquarius.html">Aquarius</a></li>
+															<li><a href = "http://my.horoscope.com/astrology/free-daily-horoscope-pisces.html">Pisces</a></li>
+													</ul>
+												</li>
+                                                <li><a href = "#about" data-toggle="modal">About</a></li>
+                                                <li><a href = "#contact" data-toggle="modal">Contact</a></li>
+												<li>
+														<form class="navbar-form" role="search">
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term">
+								<div class="input-group-btn">
+									<button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+								</div>
+							</div>
+							</form>
+							</li>
+                                        </ul>
+                               
+                                </div>
+                               
+                        </div>
+                </div>
+               
+                <div class = "container">
+               
+                        <div class = "jumbotron">
+                                <center><h1>Form Management!</h1>
+                                <p>The online form management for the university.</p>
+                                <a href = "#add"  data-toggle="modal" class = "btn btn-success">Add a User</a>
+								<a href = "#update"  data-toggle="modal" class = "btn btn-warning">Update a User</a>
+								<a href = "#delete"  data-toggle="modal" class = "btn btn-danger">Delete a User</a>
+								
+				
+
+                                <div class ="text pull-center">
+                        </div>
+               
+                </div>
+               
+       
+		
+		
+					
+				
+
+
+
+                <div class = "navbar navbar-inverse navbar-fixed-bottom">
+               
+                        <div class = "container">
+                                <p class = "navbar-text pull-left">Site Built By Bobby Jasmine, Charles, Aydin</p>
+                                <a href = "http://www.expedia.com" class = "navbar-btn btn-success btn pull-right">Travel</a>
+                        </div>
+               
+                </div>
+				
+				    <div class = "modal fade" id = "add" role = "dialog">
+                    <div class = "modal-dialog">
+                        <div class = "modal-content">
+							<form class = "form-horizontal">
+								<div class = "modal-header">
+									<h4>Add User</h4>
+								</div>
+								<div class = "modal-body">
+                                 <div class = "form-group">
+                                       
+                                        <label for = "add-Username" class = "col-lg-2 control-label">Username:</label>
+                                        <div class = "col-lg-10">
+                                           
+                                            <input type = "text" class = "form-control" id = "contact-name" placeholder = "Username">
+                                           
+                                        </div>
+                                       
+                                    </div>
+                                    <div class = "form-group">
+                                       
+                                        <label for = "add-FirstName" class = "col-lg-2 control-label">FirstName:</label>
+                                        <div class = "col-lg-10">
+                                           
+                                            <input type = "text" class = "form-control" id = "add-FirstName" placeholder = "First Name">
+                                           
+                                        </div>
+									</div>
+                                      <div class = "form-group">
+                                       
+                                        <label for = "add-LastName" class = "col-lg-2 control-label">LastName:</label>
+                                        <div class = "col-lg-10">
+                                           
+                                            <input type = "text" class = "form-control" id = "add-LastName" placeholder = "Last Name">
+                                           
+                                        </div>
+                                       
+                                    </div>  
+                               
+									 <div class = "form-group">
+                                       
+                                        <label for = "contact-email" class = "col-lg-2 control-label">Email:</label>
+                                        <div class = "col-lg-10">
+                                           
+                                            <input type = "email" class = "form-control" id = "contact-email" placeholder = "you@example.com">
+                                           
+                                        </div>
+                                       
+                                    </div>
+									 <div class = "form-group">
+                                       
+                                        <label for = "add-password" class = "col-lg-2 control-label">Password:</label>
+                                        <div class = "col-lg-10">
+                                           
+                                            <input type = "text" class = "form-control" id = "add-password" placeholder = "password">
+                                           
+                                        </div>
+                                       
+                                    </div>
+								</div>
+								         <div class = "modal-footer">
+                        <a class = "btn btn-default" data-dismiss = "modal">Close</a>    
+                                <a class = "btn btn-primary" data-dismiss = "modal">Submit</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class = "modal fade" id = "contact" role = "dialog">
+                    <div class = "modal-dialog">
+                        <div class = "modal-content">
+							<form class = "form-horizontal">
+								<div class = "modal-header">
+									<h4>Contact</h4>
+								</div>
+								<div class = "modal-body">
+                                 <div class = "form-group">
+                                       
+                                        <label for = "contact-name" class = "col-lg-2 control-label">Name:</label>
+                                        <div class = "col-lg-10">
+                                           
+                                            <input type = "text" class = "form-control" id = "contact-name" placeholder = "Full Name">
+                                           
+                                        </div>
+                                       
+                                    </div>
+                                   
+                                    <div class = "form-group">
+                                       
+                                        <label for = "contact-email" class = "col-lg-2 control-label">Email:</label>
+                                        <div class = "col-lg-10">
+                                           
+                                            <input type = "email" class = "form-control" id = "contact-email" placeholder = "you@example.com">
+                                           
+                                        </div>
+                                       
+                                    </div>
+                                   
+                                    <div class = "form-group">
+                                       
+                                        <label for = "contact-msg" class = "col-lg-2 control-label">Message:</label>
+                                        <div class = "col-lg-10">
+                                           
+                                            <textarea class = "form-control" rows = "8"></textarea>
+                                           
+                                        </div>
+                                       
+                                    </div>
+                            </div>
+                            <div class = "modal-footer">
+                        <a class = "btn btn-default" data-dismiss = "modal">Close</a>    
+                                <a class = "btn btn-primary" data-dismiss = "modal">Submit</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               <div class = "modal fade" id = "about" role = "dialog">
+			<div class = "modal-dialog">
+				<div class = "modal-content">
+					<form class = "form-horizontal">
+						<div class = "modal-header">
+							<h4>About</h4>
+						</div>
+						<div class = "modal-body">
+							<div class ="form-group">
+								<p>This site is for you to manage all your task at all times. It is accessible whenever you need it!!!</p>
+							</div>
+							<div class = "modal-footer">
+								<a class = "btn btn-default" data-dismiss = "modal">Close</a>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+                <script src = "http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+                <script src = "js/bootstrap.js"></script>
+               
+        </body>
+</html>

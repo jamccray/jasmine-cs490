@@ -5,7 +5,8 @@
 </script>
 <script>
 $(document) .ready( function() {
-alert("running script");
+//alert("running script");
+$('.formpage').hide();    
 
 function getCookie(username) {
     var name = username + "=";
@@ -22,6 +23,7 @@ function checkCookie() {
     var user = getCookie("username");
     if (user != "") {
         alert("Welcome " + user);
+		$('.formpage').show();
     } else {
 		alert("Please login.");
 		window.location.href="http://localhost:8080/formwebapp/login.html"
@@ -183,6 +185,7 @@ $("#btnUpdateUser") .click(function() {
 function fillUpdateFields(UserArray) {
 	// this creates a global variable to use later in the update button click function
 	window.userID = UserArray[0].id;
+	window.userSID = UserArray[0].user_id; //user student ID
 
 	$("#t_updateUserName").val(UserArray[0].userName);
 	$("#t_updateFirstName").val(UserArray[0].user_firstName);
@@ -226,12 +229,36 @@ $("#btnDeleteById") .click(function() {
 	});
 
 });
-});
 
+$("#btnLogout") .click(function() {
+	alert("clicked");
+	currentUserId = window.userSID;
+	/*if(!currentUserId) {
+		alert('User ID missing, please enter a valid user.');
+		return false;
+	}*/
+	var theUrl = "http://localhost:8080/formwebapp/resources/online/authSession/"+currentUserId;
+	$.ajax( {
+		url: theUrl,
+		type: "DELETE",
+		dataType: "text",
+		success: function (status) {
+			alert("Successfully logged out.");
+			window.location.href="http://localhost:8080/formwebapp/login.html";
+			document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+		},
+		error: function(event, xhr, status, errorThrown) {
+			console.log(status + "Error:" + xhr.status + " " + xhr.statusText + "," + xhr.responseText);
+			alert("error: " + status + " e: " + errorThrown);
+		}
+	});
+
+});
+});
 </script>
 
 </head>
-<body>
+<body class="formpage">
 <h3>Testing Web Services</h3>
 <div id="retrieveAll">
 <button id="btnAll">Click to Retrieve All</button>
@@ -300,6 +327,10 @@ $("#btnDeleteById") .click(function() {
 <h4>Delete User</h4>
 <input type="text" id="t_userId2" value="type id here" />
 <button id="btnDeleteById">Click to delete user by Id</button>
+</div>
+<div id="deauthenticateUser">
+<br />
+<button id="btnLogout">Logout!</button>
 </div>
 </body>
 </html>
